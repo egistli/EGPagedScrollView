@@ -20,8 +20,8 @@
 @protocol EGPagedScrollViewDelegate <NSObject>
 
 @optional
-- (CGFloat) pagePaddingOfPagedScrollingView: (EGPagedScrollView *)pagedScrollView;
-- (CGFloat) pageHeightOfPagedScrollingView: (EGPagedScrollView *)pagedScrollView;
+- (CGFloat) pagePaddingOfPagedScrollView: (EGPagedScrollView *)pagedScrollView;
+- (CGFloat) pageHeightOfPagedScrollView: (EGPagedScrollView *)pagedScrollView;
 
 @end
 

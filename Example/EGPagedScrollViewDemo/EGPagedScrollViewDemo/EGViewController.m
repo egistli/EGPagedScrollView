@@ -84,8 +84,8 @@
 
 #pragma mark - EGpagedScrollView Delegate
 
-- (CGFloat) pagePaddingOfPagedScrollingViewC:(EGPagedScrollView *)pagedScrollView {
-    return 30.f;
+- (CGFloat) pagePaddingOfPagedScrollView:(EGPagedScrollView *)pagedScrollView {
+    return 10.f;
 }
 
 #pragma mark - EGPagedScrollView DataSource

@@ -143,8 +143,8 @@
 
 - (CGFloat) pagePadding {
     CGFloat padding = 0.f;
-    if (self.delegate && [self.delegate respondsToSelector:@selector(pagePaddingOfPagedScrollingView:)]) {
-        padding = [self.delegate pagePaddingOfPagedScrollingView:self];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(pagePaddingOfPagedScrollView:)]) {
+        padding = [self.delegate pagePaddingOfPagedScrollView:self];
     }
     return padding;
 }
@@ -161,7 +161,7 @@
 - (CGFloat) pageHeight {
     CGFloat pageHeight = self.bounds.size.height;
     if (self.delegate && [self.delegate respondsToSelector:@selector(pageHeightOfPagedScrollingView:)]) {
-        pageHeight = [self.delegate pageHeightOfPagedScrollingView:self];
+        pageHeight = [self.delegate pageHeightOfPagedScrollView:self];
     }
     return pageHeight;
 }
