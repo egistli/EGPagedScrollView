@@ -15,6 +15,7 @@
 @required
 - (NSUInteger) numberOfItemsInPagedScrollView: (EGPagedScrollView *)pagedScrollViewController;
 - (UIView *) pagedScrollView: (EGPagedScrollView *)pagedScrollView viewForPageAtIndex: (NSUInteger) index;
+
 @end
 
 @protocol EGPagedScrollViewDelegate <NSObject>
@@ -23,6 +24,7 @@
 - (CGFloat) pagePaddingOfPagedScrollView: (EGPagedScrollView *)pagedScrollView;
 - (CGFloat) pageHeightOfPagedScrollView: (EGPagedScrollView *)pagedScrollView;
 
+- (void) pagedScrollView: (EGPagedScrollView *)scrollView didFocusToPage: (NSUInteger) pageIndex;
 @end
 
 @interface EGPagedScrollView : UIView

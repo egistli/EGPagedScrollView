@@ -14,6 +14,7 @@
 @property NSMutableArray *viewCaches;
 @property NSMutableDictionary *imageCaches;
 @property EGPagedScrollView *pagedScrollView;
+@property UILabel *titleLabel;
 
 @end
 
@@ -37,11 +38,23 @@
     self.view.backgroundColor = [UIColor blackColor];
     
     self.pagedScrollView = [[EGPagedScrollView alloc] initWithFrame: self.view.bounds];
-    [self.pagedScrollView setDelegate:self];
-    [self.pagedScrollView setDataSource:self];
+    self.pagedScrollView.delegate = self;
+    self.pagedScrollView.dataSource = self;
     self.pagedScrollView.enableZooming = YES;
+    self.pagedScrollView.masterScrollView.showsHorizontalScrollIndicator = NO;
+    self.pagedScrollView.masterScrollView.showsVerticalScrollIndicator = NO;
     
     [self.view addSubview: self.pagedScrollView];
+    
+    
+    self.titleLabel = [[UILabel alloc] init];
+    self.titleLabel.frame = CGRectMake(0.f, self.pagedScrollView.bounds.size.height - 32.f, self.pagedScrollView.bounds.size.width, 32.f);
+    self.titleLabel.textAlignment = NSTextAlignmentCenter;
+    self.titleLabel.textColor = [UIColor lightGrayColor];
+    self.titleLabel.backgroundColor = [UIColor colorWithRed:0.6 green:0.6 blue:0.6 alpha:0.2];
+    self.titleLabel.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
+    
+    [self.view addSubview: self.titleLabel];
     
     [self updateItems];
 }
@@ -76,6 +89,14 @@
 
 #pragma mark - EGpagedScrollView Delegate
 
+- (void) pagedScrollView: (EGPagedScrollView *)scrollView didFocusToPage: (NSUInteger) pageIndex; {
+    NSDictionary *info = [self.items objectAtIndex:pageIndex];
+    if (info) {
+        NSString *title = [info objectForKey:@"title"];
+        self.titleLabel.text = title;
+    }
+}
+
 - (CGFloat) pagePaddingOfPagedScrollView:(EGPagedScrollView *)pagedScrollView {
     return 10.f;
 }
@@ -86,46 +107,27 @@
 }
 
 - (UIView *) pagedScrollView:(EGPagedScrollView *)pagedScrollView viewForPageAtIndex:(NSUInteger)index {
-    UIView *view = nil;
+    UIImageView *view = nil;
 
     if (self.viewCaches.count > index) {
         view = [self.viewCaches objectAtIndex:index];
     } else {
-        view = [[UIView alloc] init];
-        view.frame = pagedScrollView.bounds;
-        view.backgroundColor = [UIColor blackColor];
+        view = [[UIImageView alloc] initWithFrame:view.frame];
+        view.contentMode = UIViewContentModeScaleAspectFit;
         view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        
-        UIImageView *imageView = [[UIImageView alloc] initWithFrame:view.frame];
-        imageView.tag = 999;
-        imageView.contentMode = UIViewContentModeScaleAspectFit;
-        imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        [view addSubview:imageView];
-        
-        UILabel *noLabel = [[UILabel alloc] init];
-        noLabel.frame = CGRectMake(0.f, pagedScrollView.bounds.size.height - 32.f, pagedScrollView.bounds.size.width, 32.f);
-        noLabel.tag = 998;
-        noLabel.textAlignment = NSTextAlignmentCenter;
-        noLabel.textColor = [UIColor lightGrayColor];
-        noLabel.backgroundColor = [UIColor colorWithRed:0.6 green:0.6 blue:0.6 alpha:0.2];
-        noLabel.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
-        
-        [view addSubview:noLabel];
     }
     
     NSDictionary *info = nil;
     if (self.items.count > index)  {
         info = [self.items objectAtIndex:index];
         NSURL *url = [NSURL URLWithString: [[info objectForKey:@"media"] objectForKey:@"m"]];
-        NSString *title = [info objectForKey:@"title"];
-        [(UILabel *)[view viewWithTag:998] setText: title];
+
         
         // check image
         UIImage *image = [self.imageCaches objectForKey:url];
-        if ([(UIImageView *)[view viewWithTag:999] image] != image) {
-            [(UIImageView *)[view viewWithTag:999] setImage: image];
+        if (image != nil) {
+            [view setImage: image];
         }  else {
-            // view == nil
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
                 NSData *data = [NSData dataWithContentsOfURL:url];
                 UIImage *image = [UIImage imageWithData:data];
@@ -134,7 +136,7 @@
                 dispatch_async(dispatch_get_main_queue(), ^{
                     // try update the imabe view
                     if ([pagedScrollView isDisplayingPageWithIndex:index]) {
-                        [(UIImageView *)[[self pagedScrollView:pagedScrollView viewForPageAtIndex:index] viewWithTag:999] setImage:image];
+                        [(UIImageView *)[self pagedScrollView:pagedScrollView viewForPageAtIndex:index] setImage:image];
                     }
                 });
             });
