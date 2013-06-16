@@ -32,8 +32,8 @@
         // base scrollview setting
         self.master = [[UIScrollView alloc] init];
         self.master.frame = self.bounds;
+        self.master.backgroundColor = [UIColor clearColor];
         self.master.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        self.master.backgroundColor = [UIColor darkGrayColor];
         self.master.pagingEnabled = YES;
         self.master.delegate = self;
         

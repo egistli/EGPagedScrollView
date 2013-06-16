@@ -8,8 +8,6 @@
 
 #import "EGViewController.h"
 
-#define ARC4RANDOM_MAX 0x100000000
-
 @interface EGViewController()
 
 @property NSMutableArray *items;
@@ -36,18 +34,12 @@
     
     self.view.autoresizesSubviews = YES;
     self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    self.view.backgroundColor = [UIColor whiteColor];
-
-    CGRect smallerBound = self.view.bounds;
-    smallerBound.size.width = smallerBound.size.width * 0.6;
-    smallerBound.size.height = smallerBound.size.height * 0.6;
+    self.view.backgroundColor = [UIColor blackColor];
     
-    self.pagedScrollView = [[EGPagedScrollView alloc] initWithFrame: smallerBound];
+    self.pagedScrollView = [[EGPagedScrollView alloc] initWithFrame: self.view.bounds];
     [self.pagedScrollView setDelegate:self];
     [self.pagedScrollView setDataSource:self];
-    self.pagedScrollView.enableZooming = NO;
-    
-    self.pagedScrollView.center = self.view.center;
+    self.pagedScrollView.enableZooming = YES;
     
     [self.view addSubview: self.pagedScrollView];
     
@@ -65,9 +57,11 @@
 - (void) updateItems {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
         static NSString *flickrAPIPoint = @"http://api.flickr.com/services/feeds/photos_public.gne?format=json&nojsoncallback=1";
+        NSString *raw = [[NSString alloc] initWithData: [NSData dataWithContentsOfURL:[NSURL URLWithString:flickrAPIPoint]] encoding:NSUTF8StringEncoding];
+        raw = [raw stringByReplacingOccurrencesOfString:@"\\'" withString:@"'"];
 
         NSError* error = nil;
-        NSDictionary *response = [NSJSONSerialization JSONObjectWithData: [NSData dataWithContentsOfURL:[NSURL URLWithString:flickrAPIPoint]] options:NSJSONReadingAllowFragments error:&error];
+        NSDictionary *response = [NSJSONSerialization JSONObjectWithData: [raw dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingAllowFragments error:&error];
         
         if (error == nil) {
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -78,8 +72,6 @@
             NSLog(@"error occurred when fetching flickr photos: %@", error);
         }
     });
-
-
 }
 
 #pragma mark - EGpagedScrollView Delegate
@@ -101,7 +93,7 @@
     } else {
         view = [[UIView alloc] init];
         view.frame = pagedScrollView.bounds;
-        view.backgroundColor = [UIColor colorWithRed:((double)arc4random() / ARC4RANDOM_MAX) green:((double)arc4random() / ARC4RANDOM_MAX) blue:((double)arc4random() / ARC4RANDOM_MAX) alpha:1];
+        view.backgroundColor = [UIColor blackColor];
         view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         
         UIImageView *imageView = [[UIImageView alloc] initWithFrame:view.frame];
@@ -114,7 +106,8 @@
         noLabel.frame = CGRectMake(0.f, pagedScrollView.bounds.size.height - 32.f, pagedScrollView.bounds.size.width, 32.f);
         noLabel.tag = 998;
         noLabel.textAlignment = NSTextAlignmentCenter;
-        noLabel.backgroundColor = [UIColor colorWithRed:0.4 green:0.4 blue:0.4 alpha:0.8];
+        noLabel.textColor = [UIColor lightGrayColor];
+        noLabel.backgroundColor = [UIColor colorWithRed:0.6 green:0.6 blue:0.6 alpha:0.2];
         noLabel.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
         
         [view addSubview:noLabel];
