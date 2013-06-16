@@ -27,6 +27,7 @@
 
 @interface EGPagedScrollView : UIView
 
+@property UIScrollView *masterScrollView;
 @property (nonatomic, assign) id<EGPagedScrollViewDataSource> dataSource;
 @property (nonatomic, assign) id<EGPagedScrollViewDelegate> delegate;
 @property BOOL enableZooming;
