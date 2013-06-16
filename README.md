@@ -8,13 +8,13 @@ It's a wrapped UIScrollView with delegate on itself which
 
 First, add files under "EGPagedScrollView" to your project and include "EGPagedScrollView.h".
 
-Then create an instance of EGPagedScrollView, add it to your view and set the delegate which should comforms to EGPagedScrollViewDelegate.
+Then create an instance of EGPagedScrollView, add it to your view and set the data which should comforms to EGPagedScrollViewDataSource.
 
 ```
 EGPagedScrollView *pagedScrollView = [[EGPagedScrollView alloc] initWithFrame: self.view.bounds]];
-pagedScrollView.delegate = self;
+pagedScrollView.dataSource = self;
 ```
-Your delegate object should implemnt required methods as below:
+Your dataSource should implement required methods as below:
 
 ```
 - (NSUInteger) numberOfItemsInPagedScrollView: (EGPagedScrollView *)pagedScrollViewController;
@@ -22,6 +22,6 @@ Your delegate object should implemnt required methods as below:
 ```
  And that's it, for the other details just refer to the example project.
  
- ### License ###
+### License  ###
 
 Licensed under MIT. 
